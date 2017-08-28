@@ -5,9 +5,9 @@ import operator      #运算符模块
 #计算距离
 def classify0(inX,dataSet,labels,k):
     dataSetSize=dataSet.shape[0]   #shape读取数据矩阵第一维度的长度
-    diffMat = tile(inX, (dataSetSize, 1)) - dataSet  #tile重复数组inX，有dataSet行 1个dataSet列，减法计算差值
+    diffMat = tile(inX, (dataSetSize, 1)) - dataSet  #tile重复数组inX，有dataSetSize行, 每一行inX重复1次，减法计算差值
     sqDiffMat=diffMat**2 #**是幂运算的意思，这里用的欧式距离
-    sqDisttances=sqDiffMat.sum(axis=1) #普通sum默认参数为axis=0为普通相加，axis=1为一行的行向量相加
+    sqDisttances=sqDiffMat.sum(axis=1) #普通sum默认参数为axis=0为从上到下求所有的和，axis=1为从左到右求所有列的和，结果为向量
     distances=sqDisttances**0.5
     sortedDistIndicies=distances.argsort() #argsort返回数值从小到大的索引值（数组索引0,1,2,3）
  #选择距离最小的k个点
@@ -18,7 +18,8 @@ def classify0(inX,dataSet,labels,k):
     sortedClassCount = sorted(classCount.items(), key=operator.itemgetter(1), reverse=True) #排序频率
     #!!!!!  classCount.iteritems()修改为classCount.items()
     #sorted(iterable, cmp=None, key=None, reverse=False) --> new sorted list。
-    # reverse默认升序 key关键字排序itemgetter（1）按照第一维度排序(0,1,2,3)
+    # reverse默认升序 key关键字排序itemgetter（1）按照第一维度排序(0,1,2,3)，即按照字典的值排序
+    #注意这里排序出得到的是一个List，即sortedClassCount是一个list它是[(),(),()]这样的，其中每一个元祖是映射
     return sortedClassCount[0][0]  #找出频率最高的
 
 #创建数据集
@@ -46,7 +47,8 @@ def file2matrix(filename):
 #归一化特征值
 #归一化公式  ：（当前值-最小值）/range
 def autoNorm(dataSet):
-    minVals=dataSet.min(0) #存放每列最小值，参数0使得可以从列中选取最小值，而不是当前行
+    minVals=dataSet.min(0) #存放每列最小值，参数0使得可以从列中选取最小值，而不是当前行,得到一个向量，如果括号里什么都没，就是整个矩阵的
+    #最大值，如果里面是1，就是行的最小值
     maxVals=dataSet.max(0) #存放每列最大值
     ranges = maxVals - minVals
     normDataSet=zeros(shape(dataSet))  #初始化归一化矩阵为读取的dataSet
