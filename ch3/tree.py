@@ -9,7 +9,7 @@ def createDataSet():
                [1, 0, 'no'],
                [0, 1, 'no'],
                [0, 1, 'no']]
-    labels = ['no surfacing','flippers']
+    labels = ['no surfacing','flippers'] #这个歌labels是各列的名称（并不是类别标签）
     #change to discrete values
     return dataSet, labels
 
@@ -70,8 +70,8 @@ def majorityCnt(classList):
 #创建决策树
 def createTree(dataSet,labels):
     classList=[example[-1] for example in dataSet]
-    if classList.count(classList[0]) == len(classList):
-        return classList[0]  # stop splitting when all of the classes are equal
+    if classList.count(classList[0]) == len(classList): #当classList的第一个标签的数量等于总的数量，也就是说只有一种类别
+        return classList[0]  # 停止划分
     if len(dataSet[0])==1:  #使用完了所有的特征
         return majorityCnt(classList)#返回出现次数最多的特征
     #创建树
@@ -82,7 +82,7 @@ def createTree(dataSet,labels):
     featValues=[example[bestFeat] for example in dataSet]
     uniqueVals=set(featValues)
     for value in uniqueVals:
-        subLabels = labels[:]  # copy all of labels, so trees don't mess up existing labels
+        subLabels = labels[:]  # 复制所有标签，注意这里的标签是已经把最高信息增益的标签删掉后的
         myTree[bestFeatLabel][value] = createTree(splitDataSet(dataSet, bestFeat, value), subLabels)
     return myTree
 
@@ -96,7 +96,7 @@ def classify(inputTree,featLabels,testVec):
     featIndex=featLabels.index(firstStr)  #建立索引
     for key in secondDict.keys():
         if testVec[featIndex]==key: #若该特征值等于当前key，yes往下走
-            if type(secondDict[key]).__name__=='dict':# 若为树结构
+            if type(secondDict[key]) == dict:# 若为树结构
                 classLabel=classify(secondDict[key],featLabels,testVec) #递归调用
             else:  classLabel=secondDict[key]#为叶子结点，赋予label值
     return classLabel #分类结果
